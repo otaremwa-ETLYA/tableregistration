@@ -153,7 +153,7 @@ class _AttendancePageState extends State<AttendancePage> {
       child: const Row(
         children: [
           Expanded(
-            flex: 4,
+            flex: 5,
             child: Text("Name",
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ),
@@ -163,7 +163,7 @@ class _AttendancePageState extends State<AttendancePage> {
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           Expanded(
-            flex: 2,
+            flex: 1,
             child: Text("Submit",
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ),
@@ -193,7 +193,7 @@ class _AttendancePageState extends State<AttendancePage> {
         children: [
 
           Expanded(
-            flex: 4,
+            flex: 5,
             child: Text(name),
           ),
 
@@ -202,32 +202,25 @@ class _AttendancePageState extends State<AttendancePage> {
             child: Text(bike),
           ),
 
-          Expanded(
-            flex: 2,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 19, 100, 186),
-                minimumSize: const Size(40, 32),
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
-                submitted ? "Done" : "Submit",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: submitted ? Colors.green : const Color.fromARGB(255, 255, 255, 255), // <- change text color here
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              onPressed: submitted
-                  ? null
-                  : () async {
-                      await dbRef.child(key).update({"submitted": true});
-                      setState(() {});
-                    },
+          Expanded(flex: 1, 
+          child: ElevatedButton( 
+            style: ElevatedButton.styleFrom( 
+              backgroundColor: const Color.fromARGB(255, 19, 100, 186), 
+              minimumSize: const Size(20, 50), 
+              //padding: const EdgeInsets.symmetric(horizontal: 0), 
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap, ), 
+                onPressed: submitted ? null : () async { 
+                  await dbRef.child(key).update({"submitted": true}); 
+                  setState(() {}); }, 
+                  child: Text( submitted ? "Done" : "Submit", 
+                  style: TextStyle( fontSize: 12, 
+                  color: submitted ? Colors.green : 
+                  const Color.fromARGB(255, 255, 255, 255), // <- change text color here 
+                  fontWeight: FontWeight.bold, 
+                ), 
+              ), 
             ),
           ),
-
         ],
       ),
     );
