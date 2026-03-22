@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+import 'pages/register_page.dart';
+import 'pages/attended_page.dart';
+import 'pages/self_register_page.dart';
+import 'pages/new_entries_page.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-      apiKey: "AIzaSyDOW8N1YFF2s44L5FFQxAZP4Grt84LRa70",
+      apiKey: "AIzaSyDOW8...your_api_key...",
       authDomain: "activeloaninfo.firebaseapp.com",
       databaseURL: "https://activeloaninfo-default-rtdb.firebaseio.com",
       projectId: "activeloaninfo",
@@ -31,313 +36,110 @@ class AttendanceApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: const Color.fromARGB(255, 19, 100, 186),
         scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color.fromARGB(255, 19, 100, 186),
-          foregroundColor: Colors.white,
-        ),
       ),
-      home: const AttendancePage(),
+      home: const MainPage(),
     );
   }
 }
 
-class AttendancePage extends StatefulWidget {
-  const AttendancePage({super.key});
-
-  @override
-  State<AttendancePage> createState() => _AttendancePageState();
-}
-
-class _AttendancePageState extends State<AttendancePage> {
-
-  final dbRef = FirebaseDatabase.instance
-      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration");
-
-  int attendanceCount = 0;
-  String searchQuery = "";
-  String filterBy = "bike";
-
-  String getSearchValue(Map row) {
-    if (filterBy == "bike") {
-      return (row["name"] ?? "").toString().toLowerCase(); // bike number
-    }
-    return (row["colC"] ?? "").toString().toLowerCase(); // name
-  }
-
-  void showSubmittedList(Map map) {
-
-    final submittedRows = map.entries
-        .where((e) => (e.value as Map)["submitted"] == true)
-        .toList();
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Attended Members"),
-        content: SizedBox(
-          width: 400,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: submittedRows.length,
-            itemBuilder: (_, i) {
-
-              final row = submittedRows[i].value as Map;
-              final bike = row["name"] ?? "";
-              final name = row["colC"] ?? "";
-
-              return ListTile(
-                leading: const Icon(Icons.check_circle, color: Colors.green),
-                title: Text(name),
-                subtitle: Text("Bike: $bike"),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: filterBy == "bike"
-                    ? "Search Bike Number"
-                    : "Search Name",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onChanged: (val) =>
-                  setState(() => searchQuery = val.trim().toLowerCase()),
-            ),
-          ),
-
-          const SizedBox(width: 10),
-
-          SizedBox(
-            width: 130,
-            child: DropdownButtonFormField<String>(
-              value: filterBy,
-              isDense: true,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-              ),
-              items: const [
-                DropdownMenuItem(value: "bike", child: Text("Bike")),
-                DropdownMenuItem(value: "name", child: Text("Name")),
-              ],
-              onChanged: (val) {
-                setState(() {
-                  filterBy = val!;
-                  searchQuery = "";
-                });
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildHeaderRow() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      color: const Color(0xFFEAF1F8),
-      child: const Row(
-        children: [
-          Expanded(
-            flex: 5,
-            child: Text("Name",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text("Bike Number",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text("Submit",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildRow(MapEntry entry) {
-
-    final key = entry.key;
-    final row = entry.value as Map;
-
-    final bike = row["name"] ?? "";
-    final name = row["colC"] ?? "";
-    final submitted = row["submitted"] ?? false;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Color(0xFFE0E0E0)),
-        ),
-      ),
-
-      child: Row(
-        children: [
-
-          Expanded(
-            flex: 5,
-            child: Text(name),
-          ),
-
-          Expanded(
-            flex: 3,
-            child: Text(bike),
-          ),
-
-          Expanded(flex: 1, 
-          child: ElevatedButton( 
-            style: ElevatedButton.styleFrom( 
-              backgroundColor: const Color.fromARGB(255, 19, 100, 186), 
-              minimumSize: const Size(20, 50), 
-              //padding: const EdgeInsets.symmetric(horizontal: 0), 
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap, ), 
-                onPressed: submitted ? null : () async { 
-                  await dbRef.child(key).update({"submitted": true}); 
-                  setState(() {}); }, 
-                  child: Text( submitted ? "Done" : "Submit", 
-                  style: TextStyle( fontSize: 12, 
-                  color: submitted ? Colors.green : 
-                  const Color.fromARGB(255, 255, 255, 255), // <- change text color here 
-                  fontWeight: FontWeight.bold, 
-                ), 
-              ), 
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildList(Map map) {
-
-    attendanceCount =
-        map.values.where((r) => (r as Map)["submitted"] == true).length;
-
-    final rows = map.entries
-        .where((e) => (e.value as Map)["submitted"] != true)
-        .toList();
-
-    final filtered = rows.where((e) {
-      final row = e.value as Map;
-      return getSearchValue(row).contains(searchQuery);
-    }).toList();
-
-    if (filtered.isEmpty) {
-      return const Center(
-        child: Text("No rows match the search."),
-      );
-    }
-
-    return Column(
-      children: [
-        buildHeaderRow(),
-        Expanded(
-          child: ListView.builder(
-            itemCount: filtered.length,
-            itemBuilder: (_, i) => buildRow(filtered[i]),
-          ),
-        ),
-      ],
-    );
-  }
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Reference to your Firebase registration node
+    final dbRef = FirebaseDatabase.instance.ref().child('registration');
 
-    return Scaffold(
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: Column(
+              children: [
+                const SizedBox(height: 25),
 
-      appBar: AppBar(
-        title: const Text("Attendance"),
+                /// COMPANY LOGO
+                Image.asset(
+                  "lib/assets/logo.png",
+                  height: 70,
+                ),
 
-        actions: [
+                const SizedBox(height: 10),
 
-          StreamBuilder(
-            stream: dbRef.onValue,
-            builder: (context, snap) {
+                /// NAVIGATION BAR WITH BADGE ON ATTENDED
+                StreamBuilder(
+                  stream: dbRef.onValue,
+                  builder: (context, snapshot) {
+                    int submittedCount = 0;
 
-              if (!snap.hasData) {
-                return const SizedBox();
-              }
+                    if (snapshot.hasData && snapshot.data != null) {
+                      final data =
+                          (snapshot.data! as DatabaseEvent).snapshot.value;
+                      if (data is Map) {
+                        submittedCount = data.values
+                            .where((entry) => entry['submitted'] == true)
+                            .length;
+                      }
+                    }
 
-              final event = snap.data as DatabaseEvent;
-              final map = event.snapshot.value as Map?;
+                    return TabBar(
+                      labelColor: const Color.fromARGB(255, 19, 100, 186),
+                      unselectedLabelColor: Colors.black54,
+                      indicatorColor: const Color.fromARGB(255, 19, 100, 186),
+                      labelStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      tabs: [
+                        const Tab(text: "Register"),
+                        Tab(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text("Attended"),
+                              const SizedBox(width: 6),
+                              if (submittedCount > 0)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    '$submittedCount',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const Tab(text: "Self Register"),
+                        const Tab(text: "New Entries"),
+                      ],
+                    );
+                  },
+                ),
 
-              if (map == null) {
-                return const SizedBox();
-              }
-
-              attendanceCount =
-                  map.values.where((r) => (r as Map)["submitted"] == true).length;
-
-              return GestureDetector(
-                onTap: () => showSubmittedList(map),
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: Center(
-                    child: Text(
-                      "Attended: $attendanceCount",
-                      style: const TextStyle(fontSize: 18),
-                    ),
+                const Expanded(
+                  child: TabBarView(
+                    children: [
+                      RegisterPage(),
+                      AttendedPage(),
+                      SelfRegisterPage(),
+                      NewEntriesPage(),
+                    ],
                   ),
                 ),
-              );
-            },
-          ),
-
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => setState(() => searchQuery = ""),
-          ),
-        ],
-      ),
-
-      body: Column(
-        children: [
-
-          buildSearchBar(),
-
-          Expanded(
-            child: StreamBuilder(
-              stream: dbRef.onValue,
-              builder: (context, snap) {
-
-                if (!snap.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                final event = snap.data as DatabaseEvent;
-                final map = event.snapshot.value as Map?;
-
-                if (map == null || map.isEmpty) {
-                  return const Center(
-                    child: Text("No attendance rows available."),
-                  );
-                }
-
-                return buildList(map);
-              },
+              ],
             ),
           ),
-
-        ],
+        ),
       ),
     );
   }
