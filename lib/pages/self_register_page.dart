@@ -53,221 +53,205 @@ class _SelfRegisterPageState extends State<SelfRegisterPage> {
     updating = false;
   }
 
-  @override
-  Widget build(BuildContext context) {
+@override
+Widget build(BuildContext context) {
+  return StreamBuilder(
+    stream: dbRef.onValue,
+    builder: (context, snap) {
+      if (!snap.hasData) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-    return StreamBuilder(
-      stream: dbRef.onValue,
-      builder: (context, snap) {
+      final event = snap.data as DatabaseEvent;
+      final map = event.snapshot.value as Map?;
 
-        if (!snap.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
+      if (map == null) {
+        return const Center(child: Text("No members found"));
+      }
 
-        final event = snap.data as DatabaseEvent;
-        final map = event.snapshot.value as Map?;
+      final members = map.values.map((e) => e as Map).toList();
 
-        if (map == null) {
-          return const Center(child: Text("No members found"));
-        }
-
-        final members = map.values.map((e) => e as Map).toList();
-
-        return Center(
+      return SingleChildScrollView(
+        child: Center(
           child: ConstrainedBox(
-  constraints: const BoxConstraints(maxWidth: 800),
-            child: Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(30),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: Column(
+              children: [
+                // Space above the card (same as before)
+                const SizedBox(height: 20),
 
-                    const Text(
-                      "Self Registration",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 19, 100, 186),
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    /// BIKE NUMBER AUTOCOMPLETE
-                    RawAutocomplete<String>(
-                      textEditingController: bikeController,
-                      focusNode: bikeFocus,
-
-                      optionsBuilder: (text) {
-                        if (text.text.isEmpty) return const Iterable<String>.empty();
-
-                        return members
-                            .map((e) => (e["name"] ?? "").toString())
-                            .where((bike) =>
-                                bike.toLowerCase().contains(text.text.toLowerCase()));
-                      },
-
-                      onSelected: (bike) {
-                        autofillFromBike(bike, members);
-                      },
-
-                      fieldViewBuilder:
-                          (context, controller, focusNode, onSubmit) {
-                        return TextField(
-                          controller: controller,
-                          focusNode: focusNode,
-                          decoration: const InputDecoration(
-                            labelText: "Bike Number",
-                            border: OutlineInputBorder(),
+                // The card
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(30),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          "Self Registration",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 19, 100, 186),
                           ),
-                          onChanged: (val) {
-                            autofillFromBike(val, members);
+                        ),
+
+                        const SizedBox(height: 30),
+
+                        // Bike Number Autocomplete
+                        RawAutocomplete<String>(
+                          textEditingController: bikeController,
+                          focusNode: bikeFocus,
+                          optionsBuilder: (text) {
+                            if (text.text.isEmpty) return const Iterable<String>.empty();
+                            return members
+                                .map((e) => (e["name"] ?? "").toString())
+                                .where((bike) => bike.toLowerCase().contains(text.text.toLowerCase()));
                           },
-                        );
-                      },
-
-                      optionsViewBuilder:
-                          (context, onSelected, options) {
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: Material(
-                            elevation: 4,
-                            child: SizedBox(
-                              height: 200,
-                              child: ListView(
-                                padding: EdgeInsets.zero,
-                                children: options.map((option) {
-                                  return ListTile(
-                                    title: Text(option),
-                                    onTap: () => onSelected(option),
-                                  );
-                                }).toList(),
+                          onSelected: (bike) => autofillFromBike(bike, members),
+                          fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                            return TextField(
+                              controller: controller,
+                              focusNode: focusNode,
+                              decoration: const InputDecoration(
+                                labelText: "Bike Number",
+                                border: OutlineInputBorder(),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    /// NAME AUTOCOMPLETE
-                    RawAutocomplete<String>(
-                      textEditingController: nameController,
-                      focusNode: nameFocus,
-
-                      optionsBuilder: (text) {
-                        if (text.text.isEmpty) return const Iterable<String>.empty();
-
-                        return members
-                            .map((e) => (e["colC"] ?? "").toString())
-                            .where((name) =>
-                                name.toLowerCase().contains(text.text.toLowerCase()));
-                      },
-
-                      onSelected: (name) {
-                        autofillFromName(name, members);
-                      },
-
-                      fieldViewBuilder:
-                          (context, controller, focusNode, onSubmit) {
-                        return TextField(
-                          controller: controller,
-                          focusNode: focusNode,
-                          decoration: const InputDecoration(
-                            labelText: "Name",
-                            border: OutlineInputBorder(),
-                          ),
-                          onChanged: (val) {
-                            autofillFromName(val, members);
+                              onChanged: (val) => autofillFromBike(val, members),
+                            );
                           },
-                        );
-                      },
-
-                      optionsViewBuilder:
-                          (context, onSelected, options) {
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: Material(
-                            elevation: 4,
-                            child: SizedBox(
-                              height: 200,
-                              child: ListView(
-                                padding: EdgeInsets.zero,
-                                children: options.map((option) {
-                                  return ListTile(
-                                    title: Text(option),
-                                    onTap: () => onSelected(option),
-                                  );
-                                }).toList(),
+                          optionsViewBuilder: (context, onSelected, options) {
+                            return Align(
+                              alignment: Alignment.topLeft,
+                              child: Material(
+                                elevation: 4,
+                                child: SizedBox(
+                                  height: 200,
+                                  child: ListView(
+                                    padding: EdgeInsets.zero,
+                                    children: options.map((option) {
+                                      return ListTile(
+                                        title: Text(option),
+                                        onTap: () => onSelected(option),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                            );
+                          },
+                        ),
 
-                    const SizedBox(height: 30),
+                        const SizedBox(height: 20),
 
-                    /// SUBMIT BUTTON
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 19, 100, 186),
+                        // Name Autocomplete
+                        RawAutocomplete<String>(
+                          textEditingController: nameController,
+                          focusNode: nameFocus,
+                          optionsBuilder: (text) {
+                            if (text.text.isEmpty) return const Iterable<String>.empty();
+                            return members
+                                .map((e) => (e["colC"] ?? "").toString())
+                                .where((name) => name.toLowerCase().contains(text.text.toLowerCase()));
+                          },
+                          onSelected: (name) => autofillFromName(name, members),
+                          fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                            return TextField(
+                              controller: controller,
+                              focusNode: focusNode,
+                              decoration: const InputDecoration(
+                                labelText: "Name",
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (val) => autofillFromName(val, members),
+                            );
+                          },
+                          optionsViewBuilder: (context, onSelected, options) {
+                            return Align(
+                              alignment: Alignment.topLeft,
+                              child: Material(
+                                elevation: 4,
+                                child: SizedBox(
+                                  height: 200,
+                                  child: ListView(
+                                    padding: EdgeInsets.zero,
+                                    children: options.map((option) {
+                                      return ListTile(
+                                        title: Text(option),
+                                        onTap: () => onSelected(option),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 30),
+
+                        // Submit button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 19, 100, 186),
                               foregroundColor: Colors.white,
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            onPressed: () async {
+                              final matchEntry = map.entries.firstWhere(
+                                (e) => (e.value as Map)["name"] == bikeController.text,
+                                orElse: () => MapEntry("", {}),
+                              );
+
+                              if (matchEntry.key != "") {
+                                await dbRef.child(matchEntry.key).update({"submitted": true});
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Submitted successfully")),
+                                );
+
+                                bikeController.clear();
+                                nameController.clear();
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("No matching member found")),
+                                );
+                              }
+                            },
+                            child: const Text(
+                              "Submit",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
                         ),
-                        onPressed: () async {
-
-                          final matchEntry = map.entries.firstWhere(
-                            (e) => (e.value as Map)["name"] == bikeController.text,
-                            orElse: () => MapEntry("", {}),
-                          );
-
-                          if (matchEntry.key != "") {
-
-                            await dbRef
-                                .child(matchEntry.key)
-                                .update({"submitted": true});
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("Submitted successfully")),
-                            );
-
-                            bikeController.clear();
-                            nameController.clear();
-
-                          } else {
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("No matching member found")),
-                            );
-
-                          }
-                        },
-                        child: const Text(
-                          "Submit",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+
+                // Space below the card
+                const SizedBox(height: 20),
+
+                // Your message
+                const Text(
+                  "Thanks for attending Table Fellowship. Blessings!",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+
+                // Space after the message
+                const SizedBox(height: 20),
+              ],
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 }
