@@ -7,7 +7,7 @@ class AttendedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dbRef = FirebaseDatabase.instance
-        .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration");
+        .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration/lyantonde");
 
     // Function to unsubmit a single row
     void unsubmit(String key) {

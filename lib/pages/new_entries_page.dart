@@ -13,7 +13,7 @@ class _NewEntriesPageState extends State<NewEntriesPage> {
   final nameController = TextEditingController();
 
   final newRef = FirebaseDatabase.instance
-      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/newEntries");
+      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration/lyantonde/newEntries");
 
   @override
   Widget build(BuildContext context) {

@@ -10,7 +10,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final dbRef = FirebaseDatabase.instance
-      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration");
+      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration/lyantonde");
 
   String searchQuery = "";
   String filterBy = "bike";

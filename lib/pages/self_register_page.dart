@@ -11,7 +11,7 @@ class SelfRegisterPage extends StatefulWidget {
 class _SelfRegisterPageState extends State<SelfRegisterPage> {
 
   final dbRef = FirebaseDatabase.instance
-      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration");
+      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration/lyantonde");
 
   final bikeController = TextEditingController();
   final nameController = TextEditingController();

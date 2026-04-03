@@ -48,7 +48,7 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Reference to your Firebase registration node
-    final dbRef = FirebaseDatabase.instance.ref().child('registration');
+    final dbRef = FirebaseDatabase.instance.ref().child('registration/lyantonde');
 
     return DefaultTabController(
       length: 4,
