@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+import 'pages/branch_config.dart';
+import 'pages/login_page.dart';
 import 'pages/register_page.dart';
 import 'pages/attended_page.dart';
 import 'pages/self_register_page.dart';
@@ -37,7 +39,7 @@ class AttendanceApp extends StatelessWidget {
         primaryColor: const Color.fromARGB(255, 19, 100, 186),
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const MainPage(),
+      home: const LoginPage(), // Start with login
     );
   }
 }
@@ -47,8 +49,8 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Reference to your Firebase registration node
-    final dbRef = FirebaseDatabase.instance.ref().child('registration/lyantonde');
+    // Now dynamic Firebase reference based on logged-in branch
+    final dbRef = BranchConfig.dbRef;
 
     return DefaultTabController(
       length: 4,

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'branch_config.dart';
+
+
 
 class AttendedPage extends StatelessWidget {
   const AttendedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final dbRef = FirebaseDatabase.instance
-        .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration/lyantonde");
+    final dbRef = BranchConfig.dbRef;
 
     // Function to unsubmit a single row
     void unsubmit(String key) {

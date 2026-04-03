@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import '../pages/branch_config.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,8 +10,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final dbRef = FirebaseDatabase.instance
-      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration/lyantonde");
+final dbRef = BranchConfig.dbRef;
 
   String searchQuery = "";
   String filterBy = "bike";

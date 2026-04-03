@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'branch_config.dart';
 
 class NewEntriesPage extends StatefulWidget {
   const NewEntriesPage({super.key});
@@ -12,8 +13,8 @@ class _NewEntriesPageState extends State<NewEntriesPage> {
   final bikeController = TextEditingController();
   final nameController = TextEditingController();
 
-  final newRef = FirebaseDatabase.instance
-      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration/lyantonde/newEntries");
+final newRef = FirebaseDatabase.instance
+    .ref("registration/${BranchConfig.branch}/newEntries");
 
   @override
   Widget build(BuildContext context) {

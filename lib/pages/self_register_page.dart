@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'branch_config.dart';
 
 class SelfRegisterPage extends StatefulWidget {
   const SelfRegisterPage({super.key});
@@ -10,8 +11,8 @@ class SelfRegisterPage extends StatefulWidget {
 
 class _SelfRegisterPageState extends State<SelfRegisterPage> {
 
-  final dbRef = FirebaseDatabase.instance
-      .refFromURL("https://activeloaninfo-default-rtdb.firebaseio.com/registration/lyantonde");
+  final dbRef = BranchConfig.dbRef;
+
 
   final bikeController = TextEditingController();
   final nameController = TextEditingController();
