@@ -105,8 +105,8 @@ try {
               Image.asset("lib/assets/logo.png", height: 80),
               const SizedBox(height: 25),
               const Text(
-                "Branch Login",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                "Login to get started with Table Fellowship Engagement Registration.",
+                style: TextStyle(fontSize: 20, color: Colors.grey,),
               ),
               const SizedBox(height: 20),
 
@@ -157,21 +157,27 @@ try {
               const SizedBox(height: 20),
 
               // Sign In button
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: loading ? null : login,
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ),
-                  child: loading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Sign In"),
-                ),
-              ),
+              SizedBox(width: double.infinity,
+height: 48,
+child: ElevatedButton(
+  onPressed: loading ? null : login,
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color.fromARGB(255, 19, 100, 186), // blue button
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(5),
+    ),
+  ),
+  child: loading
+      ? const CircularProgressIndicator(color: Colors.white)
+      : const Text(
+          "Sign In",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.white, // white text
+          ),
+        ),
+),),
 
               const SizedBox(height: 10),
               Text(error, style: const TextStyle(color: Colors.red)),
