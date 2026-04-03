@@ -114,7 +114,7 @@ final dbRef = BranchConfig.dbRef;
                         ),
                         child: ListTile(
                           title: Text(row["colC"] ?? ""),
-                          subtitle: Text("Bike: ${row["name"]}"),
+                          subtitle: Text("Number: ${row["name"]}"),
                           trailing: ElevatedButton(
                             onPressed: () async {
                               await dbRef.child(key).update({"submitted": true});

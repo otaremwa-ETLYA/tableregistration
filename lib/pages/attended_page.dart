@@ -64,7 +64,7 @@ class AttendedPage extends StatelessWidget {
                       leading:
                           const Icon(Icons.check_circle, color: Color.fromARGB(255, 19, 100, 186)),
                       title: Text(row["colC"] ?? ""),
-                      subtitle: Text("Bike: ${row["name"]}"),
+                      subtitle: Text("Number: ${row["name"]}"),
                       trailing: ElevatedButton(
                         onPressed: () => unsubmit(key),
                         style: ElevatedButton.styleFrom(

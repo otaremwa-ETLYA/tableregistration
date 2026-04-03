@@ -14,8 +14,7 @@ class _NewEntriesPageState extends State<NewEntriesPage> {
   final nameController = TextEditingController();
 
 final newRef = FirebaseDatabase.instance
-    .ref("registration/${BranchConfig.branch}/newEntries");
-
+    .ref("registration/newEntries/${BranchConfig.branch}");
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
