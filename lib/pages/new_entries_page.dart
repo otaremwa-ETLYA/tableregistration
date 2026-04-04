@@ -15,6 +15,37 @@ class _NewEntriesPageState extends State<NewEntriesPage> {
 
 final newRef = FirebaseDatabase.instance
     .ref("registration/newEntries/${BranchConfig.branch}");
+
+final bikeFocus = FocusNode();
+final nameFocus = FocusNode();
+
+Future<void> submitNewEntry() async {
+  final bike = bikeController.text.trim();
+  final name = nameController.text.trim();
+
+  if (bike.isEmpty && name.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Enter at least one field")),
+    );
+    return;
+  }
+
+  await newRef.push().set({
+    "bike": bike,
+    "name": name,
+  });
+
+  bikeController.clear();
+  nameController.clear();
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("New entry added")),
+  );
+
+  FocusScope.of(context).requestFocus(bikeFocus);
+}
+
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -48,18 +79,28 @@ final newRef = FirebaseDatabase.instance
                       const SizedBox(height: 30),
                       TextField(
                         controller: bikeController,
+                        focusNode: bikeFocus,
+                        textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
                           labelText: "Bike Number",
                           border: OutlineInputBorder(),
                         ),
+                        onSubmitted: (_) {
+                          FocusScope.of(context).requestFocus(nameFocus);
+                        },
                       ),
                       const SizedBox(height: 20),
                       TextField(
                         controller: nameController,
+                        focusNode: nameFocus,
+                        textInputAction: TextInputAction.done,
                         decoration: const InputDecoration(
                           labelText: "Name",
                           border: OutlineInputBorder(),
                         ),
+                        onSubmitted: (_) {
+                          submitNewEntry();
+                        },
                       ),
                       const SizedBox(height: 30),
                       SizedBox(
@@ -69,29 +110,12 @@ final newRef = FirebaseDatabase.instance
                             backgroundColor: const Color.fromARGB(255, 19, 100, 186),
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
                           ),
-                          onPressed: () async {
-                            final bike = bikeController.text.trim();
-                            final name = nameController.text.trim();
-
-                            if (bike.isEmpty && name.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Enter at least one field")),
-                              );
-                              return;
-                            }
-
-                            await newRef.push().set({
-                              "bike": bike,
-                              "name": name,
-                            });
-
-                            bikeController.clear();
-                            nameController.clear();
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("New entry added")),
-                            );
+                          onPressed: () {
+                            submitNewEntry();
                           },
                           child: const Text(
                             "Submit",

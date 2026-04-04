@@ -45,7 +45,8 @@ class AttendanceApp extends StatelessWidget {
 }
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+  final String username; // add this line
+  const MainPage({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +63,43 @@ class MainPage extends StatelessWidget {
               children: [
                 const SizedBox(height: 25),
 
-                /// COMPANY LOGO
-                Image.asset(
-                  "lib/assets/logo.png",
-                  height: 70,
+                
+                /// HEADER ROW WITH LOGO AND USER INFO
+               
+                Container(
+                  width: double.infinity, // full width
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      /// Logo at extreme left
+                      Image.asset(
+                        "lib/assets/logo.png",
+                        height: 50,
+                      ),
+
+                      /// Username + | + profile icon on right
+                      Row(
+                        children: [
+                          Text(
+                            username,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Text("|", style: TextStyle(fontSize: 16)),
+                          const SizedBox(width: 4),
+                          const CircleAvatar(
+                            radius: 18,
+                            child: Icon(Icons.person),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 10),

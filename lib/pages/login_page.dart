@@ -54,22 +54,26 @@ try {
   final users = Map<String, dynamic>.from(snapshot.value as Map);
   bool found = false;
 
-  for (var entry in users.entries) {
-    String branchKey = entry.key.toLowerCase(); // lowercase for comparison
-    final branchData = Map<String, dynamic>.from(entry.value as Map);
-    final storedPassword = branchData["password"]?.toString() ?? "";
+for (var entry in users.entries) {
+  String branchKey = entry.key.toLowerCase(); // lowercase for comparison
+  final branchData = Map<String, dynamic>.from(entry.value as Map);
+  final storedPassword = branchData["password"]?.toString() ?? "";
 
-    if (branchKey == enteredBranch && storedPassword == enteredPassword) {
-      BranchConfig.branch = entry.key; // preserve original case
-      found = true;
+  if (branchKey == enteredBranch && storedPassword == enteredPassword) {
+    BranchConfig.branch = entry.key; // preserve original case
+    found = true;
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MainPage()),
-      );
-      break;
-    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MainPage(
+          username: enteredBranch, // use the branch name as username
+        ),
+      ),
+    );
+    break;
   }
+}
 
   if (!found) {
     setState(() {
@@ -112,48 +116,87 @@ try {
 
               // Username input
               TextField(
-                controller: usernameController,
-                focusNode: usernameFocus,
-                textInputAction: TextInputAction.next,
-                style: const TextStyle(fontSize: 14),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Username",
-                  hintStyle: const TextStyle(fontSize: 14),
-                ),
-                onSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(passwordFocus);
-                },
-              ),
+  controller: usernameController,
+  focusNode: usernameFocus,
+  textInputAction: TextInputAction.next,
+  style: const TextStyle(fontSize: 13),
+  decoration: InputDecoration(
+    labelText: "Username",
+
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Colors.grey,
+        width: 1,
+      ),
+    ),
+
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Color.fromARGB(255, 19, 100, 186),
+        width: 2,
+      ),
+    ),
+       floatingLabelStyle: const TextStyle(color: Color.fromARGB(255, 19, 100, 186),
+    ),
+  ),
+  onSubmitted: (_) {
+    FocusScope.of(context).requestFocus(passwordFocus);
+  },
+),
               const SizedBox(height: 15),
 
               // Password input
               TextField(
-                controller: passwordController,
-                focusNode: passwordFocus,
-                obscureText: _obscurePassword,
-                textInputAction: TextInputAction.done,
-                style: const TextStyle(fontSize: 14),
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  hintText: "Password",
-                  hintStyle: const TextStyle(fontSize: 14),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  ),
-                ),
-                onSubmitted: (_) {
-                  login();
-                },
-              ),
+  controller: passwordController,
+  focusNode: passwordFocus,
+  obscureText: _obscurePassword,
+  textInputAction: TextInputAction.done,
+  style: const TextStyle(fontSize: 13),
+  decoration: InputDecoration(
+    labelText: "Password",
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Colors.grey,
+        width: 1,
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Color.fromARGB(255, 19, 100, 186),
+        width: 2,
+      ),
+    ),
+    floatingLabelStyle: const TextStyle(
+      color: Color.fromARGB(255, 19, 100, 186),
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    suffixIcon: IconButton(
+      icon: Icon(
+        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+        size: 20,
+      ),
+      onPressed: () {
+        setState(() {
+          _obscurePassword = !_obscurePassword;
+        });
+      },
+    ),
+  ),
+  onSubmitted: (_) {
+    login();
+  },
+),
               const SizedBox(height: 20),
 
               // Sign In button
@@ -164,7 +207,7 @@ child: ElevatedButton(
   style: ElevatedButton.styleFrom(
     backgroundColor: const Color.fromARGB(255, 19, 100, 186), // blue button
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(5),
+      borderRadius: BorderRadius.circular(8),
     ),
   ),
   child: loading

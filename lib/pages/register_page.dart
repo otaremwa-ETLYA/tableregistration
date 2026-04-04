@@ -58,7 +58,7 @@ final dbRef = BranchConfig.dbRef;
                         border: OutlineInputBorder(),
                       ),
                       items: const [
-                        DropdownMenuItem(value: "bike", child: Text("Bike")),
+                        DropdownMenuItem(value: "bike", child: Text("Number")),
                         DropdownMenuItem(value: "name", child: Text("Name")),
                       ],
                       onChanged: (val) {

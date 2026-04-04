@@ -203,6 +203,9 @@ Widget build(BuildContext context) {
                               backgroundColor: const Color.fromARGB(255, 19, 100, 186),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
                             ),
                             onPressed: () async {
                               final matchEntry = map.entries.firstWhere(
