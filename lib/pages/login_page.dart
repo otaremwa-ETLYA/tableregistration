@@ -98,136 +98,158 @@ for (var entry in users.entries) {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+  Widget build(BuildContext context) {return Scaffold(
+  body: Stack(
+    children: [
+      // Background image
+      SizedBox.expand(
+        child: Image.asset(
+          "lib/assets/bgd_image.jpg",
+          fit: BoxFit.cover,
+        ),
+      ),
+
+      // Centered card content
+      Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 400),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset("lib/assets/logo.png", height: 80),
-              const SizedBox(height: 25),
-              const Text(
-                "Login to get started with Table Fellowship Engagement Registration.",
-                style: TextStyle(fontSize: 20, color: Colors.grey,),
+          child: Card(
+            elevation: 8, // shadow
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            color: Colors.white.withOpacity(0.70),// card background
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset("lib/assets/logo.png", height: 80),
+                  const SizedBox(height: 25),
+                  const Text(
+                    "Login to get started with Table Fellowship Engagement Registration.",
+                    style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 0, 0, 0)),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Username input
+                  TextField(
+                    controller: usernameController,
+                    focusNode: usernameFocus,
+                    textInputAction: TextInputAction.next,
+                    style: const TextStyle(fontSize: 13),
+                    decoration: InputDecoration(
+                      labelText: "Username",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 19, 100, 186),
+                          width: 2,
+                        ),
+                      ),
+                      floatingLabelStyle: const TextStyle(
+                        color: Color.fromARGB(255, 19, 100, 186),
+                      ),
+                    ),
+                    onSubmitted: (_) {
+                      FocusScope.of(context).requestFocus(passwordFocus);
+                    },
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Password input
+                  TextField(
+                    controller: passwordController,
+                    focusNode: passwordFocus,
+                    obscureText: _obscurePassword,
+                    textInputAction: TextInputAction.done,
+                    style: const TextStyle(fontSize: 13),
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 19, 100, 186),
+                          width: 2,
+                        ),
+                      ),
+                      floatingLabelStyle: const TextStyle(
+                        color: Color.fromARGB(255, 19, 100, 186),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                    ),
+                    onSubmitted: (_) {
+                      login();
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Sign In button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: loading ? null : login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 19, 100, 186),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: loading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              "Sign In",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+                  Text(error, style: const TextStyle(color: Colors.red)),
+                ],
               ),
-              const SizedBox(height: 20),
-
-              // Username input
-              TextField(
-  controller: usernameController,
-  focusNode: usernameFocus,
-  textInputAction: TextInputAction.next,
-  style: const TextStyle(fontSize: 13),
-  decoration: InputDecoration(
-    labelText: "Username",
-
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(
-        color: Colors.grey,
-        width: 1,
-      ),
-    ),
-
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(
-        color: Color.fromARGB(255, 19, 100, 186),
-        width: 2,
-      ),
-    ),
-       floatingLabelStyle: const TextStyle(color: Color.fromARGB(255, 19, 100, 186),
-    ),
-  ),
-  onSubmitted: (_) {
-    FocusScope.of(context).requestFocus(passwordFocus);
-  },
-),
-              const SizedBox(height: 15),
-
-              // Password input
-              TextField(
-  controller: passwordController,
-  focusNode: passwordFocus,
-  obscureText: _obscurePassword,
-  textInputAction: TextInputAction.done,
-  style: const TextStyle(fontSize: 13),
-  decoration: InputDecoration(
-    labelText: "Password",
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(
-        color: Colors.grey,
-        width: 1,
-      ),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(
-        color: Color.fromARGB(255, 19, 100, 186),
-        width: 2,
-      ),
-    ),
-    floatingLabelStyle: const TextStyle(
-      color: Color.fromARGB(255, 19, 100, 186),
-    ),
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-    suffixIcon: IconButton(
-      icon: Icon(
-        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-        size: 20,
-      ),
-      onPressed: () {
-        setState(() {
-          _obscurePassword = !_obscurePassword;
-        });
-      },
-    ),
-  ),
-  onSubmitted: (_) {
-    login();
-  },
-),
-              const SizedBox(height: 20),
-
-              // Sign In button
-              SizedBox(width: double.infinity,
-height: 48,
-child: ElevatedButton(
-  onPressed: loading ? null : login,
-  style: ElevatedButton.styleFrom(
-    backgroundColor: const Color.fromARGB(255, 19, 100, 186), // blue button
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-  ),
-  child: loading
-      ? const CircularProgressIndicator(color: Colors.white)
-      : const Text(
-          "Sign In",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.white, // white text
-          ),
-        ),
-),),
-
-              const SizedBox(height: 10),
-              Text(error, style: const TextStyle(color: Colors.red)),
-            ],
+            ),
           ),
         ),
       ),
-    );
-  }
+    ],
+  ),
+);}
 }

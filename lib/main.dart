@@ -45,136 +45,190 @@ class AttendanceApp extends StatelessWidget {
 }
 
 class MainPage extends StatelessWidget {
-  final String username; // add this line
+  final String username;
   const MainPage({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
-    // Now dynamic Firebase reference based on logged-in branch
+    // Dynamic Firebase reference based on logged-in branch
     final dbRef = BranchConfig.dbRef;
 
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        body: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: Column(
-              children: [
-                const SizedBox(height: 25),
+        body: Stack(
+          children: [
+            // Full-screen background image
+            SizedBox.expand(
+              child: Image.asset("lib/assets/bgd_image.jpg", fit: BoxFit.cover),
+            ),
 
-                
-                /// HEADER ROW WITH LOGO AND USER INFO
-               
-                Container(
-                  width: double.infinity, // full width
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// Logo at extreme left
-                      Image.asset(
-                        "lib/assets/logo.png",
-                        height: 50,
-                      ),
+            // Optional semi-transparent overlay to improve readability
+            Container(color: Colors.black.withOpacity(0.2)),
 
-                      /// Username + | + profile icon on right
-                      Row(
-                        children: [
-                          Text(
-                            username,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          const Text("|", style: TextStyle(fontSize: 16)),
-                          const SizedBox(width: 4),
-                          const CircleAvatar(
-                            radius: 18,
-                            child: Icon(Icons.person),
-                          ),
-                        ],
-                      ),
-                    ],
+            // Centered constrained content with card effect
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: Card(
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
+                  color: Colors.white.withOpacity(
+                    0.85,
+                  ), // semi-transparent card
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 25),
 
-                const SizedBox(height: 10),
-
-                /// NAVIGATION BAR WITH BADGE ON ATTENDED
-                StreamBuilder(
-                  stream: dbRef.onValue,
-                  builder: (context, snapshot) {
-                    int submittedCount = 0;
-
-                    if (snapshot.hasData && snapshot.data != null) {
-                      final data =
-                          (snapshot.data! as DatabaseEvent).snapshot.value;
-                      if (data is Map) {
-                        submittedCount = data.values
-                            .where((entry) => entry['submitted'] == true)
-                            .length;
-                      }
-                    }
-
-                    return TabBar(
-                      labelColor: const Color.fromARGB(255, 19, 100, 186),
-                      unselectedLabelColor: Colors.black54,
-                      indicatorColor: const Color.fromARGB(255, 19, 100, 186),
-                      labelStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      tabs: [
-                        const Tab(text: "Register"),
-                        Tab(
+                        /// HEADER ROW WITH LOGO AND USER INFO
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: BoxDecoration(
+                          color: Colors.white, // white background
+                          // borderRadius: const BorderRadius.only(
+                          //   topLeft: Radius.circular(12),
+                          //   topRight: Radius.circular(12),
+                          // ),
+                          ),
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text("Attended"),
-                              const SizedBox(width: 6),
-                              if (submittedCount > 0)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    '$submittedCount',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                              Image.asset(
+                                "lib/assets/logo.png",
+                                height: 20,
+                                fit: BoxFit.fitHeight,
+                              ),
+
+                              /// Take all remaining space for username/profile at right
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      username,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
+                                    const SizedBox(width: 4),
+                                    const Text(
+                                      "|",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const CircleAvatar(
+                                      radius: 18,
+                                      child: Icon(Icons.person),
+                                    ),
+                                  ],
                                 ),
+                              ),
                             ],
                           ),
                         ),
-                        const Tab(text: "Self Register"),
-                        const Tab(text: "New Entries"),
-                      ],
-                    );
-                  },
-                ),
 
-                const Expanded(
-                  child: TabBarView(
-                    children: [
-                      RegisterPage(),
-                      AttendedPage(),
-                      SelfRegisterPage(),
-                      NewEntriesPage(),
-                    ],
+                        const SizedBox(height: 10),
+
+                        /// NAVIGATION BAR WITH BADGE ON ATTENDED
+                        StreamBuilder(
+                          stream: dbRef.onValue,
+                          builder: (context, snapshot) {
+                            int submittedCount = 0;
+
+                            if (snapshot.hasData && snapshot.data != null) {
+                              final data =
+                                  (snapshot.data! as DatabaseEvent)
+                                      .snapshot
+                                      .value;
+                              if (data is Map) {
+                                submittedCount =
+                                    data.values
+                                        .where(
+                                          (entry) => entry['submitted'] == true,
+                                        )
+                                        .length;
+                              }
+                            }
+
+                            return TabBar(
+                              labelColor: const Color.fromARGB(
+                                255,
+                                19,
+                                100,
+                                186,
+                              ),
+                              unselectedLabelColor: Colors.black54,
+                              indicatorColor: const Color.fromARGB(
+                                255,
+                                19,
+                                100,
+                                186,
+                              ),
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              tabs: [
+                                const Tab(text: "Register"),
+                                Tab(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Text("Attended"),
+                                      const SizedBox(width: 6),
+                                      if (submittedCount > 0)
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '$submittedCount',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                const Tab(text: "Self Register"),
+                                const Tab(text: "New Entries"),
+                              ],
+                            );
+                          },
+                        ),
+
+                        const Expanded(
+                          child: TabBarView(
+                            children: [
+                              RegisterPage(),
+                              AttendedPage(),
+                              SelfRegisterPage(),
+                              NewEntriesPage(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
