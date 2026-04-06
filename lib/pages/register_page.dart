@@ -110,24 +110,29 @@ final dbRef = BranchConfig.dbRef;
                             vertical: 8, horizontal: 12),
                         elevation: 2,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white, // only content area is white
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: ListTile(
                           title: Text(row["colC"] ?? ""),
                           subtitle: Text("Number: ${row["name"]}"),
-                          trailing: ElevatedButton(
-                            onPressed: () async {
-                              await dbRef.child(key).update({"submitted": true});
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 19, 100, 186), // blue
-                              foregroundColor: Colors.white, // text color
-                              minimumSize: const Size(70, 36), // optional, keeps the button consistent
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            ),
-                            child: const Text("Submit"),
-                          ),
+                          trailing: InkWell(
+  borderRadius: BorderRadius.circular(6),
+  onTap: () async {
+    await dbRef.child(key).update({"submitted": true});
+  },
+  child: Image.asset(
+    "lib/assets/SUBMIT.png",
+    height: 40,
+    fit: BoxFit.contain,
+  ),
+),
                         ),
+                        )
                       );
                     },
                   );

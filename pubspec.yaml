@@ -25,3 +25,5 @@ flutter:
   assets:
     - lib/assets/logo.png
     - lib/assets/bgd_image.jpg
+    - lib/assets/SUBMIT.png
+    - lib/assets/UNSUBMIT.png

@@ -26,113 +26,121 @@ class AttendedPage extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: Colors.transparent, 
       body: StreamBuilder(
-        stream: dbRef.onValue,
-        builder: (context, snap) {
-          if (!snap.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+  stream: dbRef.onValue,
+  builder: (context, snap) {
+    if (!snap.hasData) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-          final event = snap.data as DatabaseEvent;
-          final map = event.snapshot.value as Map?;
+    final event = snap.data as DatabaseEvent;
+    final map = event.snapshot.value as Map?;
 
-          if (map == null) {
-            return const Center(child: Text("No attended members"));
-          }
+    if (map == null) {
+      return const Center(child: Text("No attended members"));
+    }
 
-          final rows = map.entries
-              .where((e) => (e.value as Map)["submitted"] == true)
-              .toList();
+    final rows = map.entries
+        .where((e) => (e.value as Map)["submitted"] == true)
+        .toList();
 
-          return Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 800),
-              child: ListView.builder(
-                itemCount: rows.length,
-                itemBuilder: (_, i) {
-                  final key = rows[i].key;
-                  final row = rows[i].value as Map;
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: ListView.builder(
+          itemCount: rows.length,
+          itemBuilder: (_, i) {
+            final key = rows[i].key;
+            final row = rows[i].value as Map;
 
-                  return Card(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      leading:
-                          const Icon(Icons.check_circle, color: Color.fromARGB(255, 19, 100, 186)),
-                      title: Text(row["colC"] ?? ""),
-                      subtitle: Text("Number: ${row["name"]}"),
-                      trailing: ElevatedButton(
-                        onPressed: () => unsubmit(key),
-                        style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey, // button color
-                        foregroundColor: Colors.white,      // text color
-                        minimumSize: const Size(70, 36),    // keeps button consistent
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      ),
-                        child: const Text("Unsubmit"),
-                      ),
-                    ),
-                  );
-                },
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              elevation: 2,
+              color: Colors.transparent, // make card itself transparent
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
-            ),
-          );
-        },
-      ),
-      floatingActionButton: StreamBuilder(
-        stream: dbRef.onValue,
-        builder: (context, snap) {
-          if (!snap.hasData) return const SizedBox.shrink();
-          final event = snap.data as DatabaseEvent;
-          final map = event.snapshot.value as Map?;
-          if (map == null) return const SizedBox.shrink();
-
-          return FloatingActionButton.extended(
-            onPressed: () async {
-              // Show confirmation dialog
-              final confirm = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("Confirm Clear All"),
-                  content: const Text(
-                      "Are you sure you want to mark all submitted rows as unsubmitted?"),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text("Cancel"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text("Yes, Clear All"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,   // grey button
-                        foregroundColor: Colors.white,  // white text
-                      ),
-                    ),
-                  ],
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white, // only the content is white
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              );
-
-              if (confirm == true) {
-                await unsubmitAll(map);
-              }
-            },
-            label: const Text(
-              "Clear all",
-              style: TextStyle(color: Colors.white), // text white
-            ),
-            icon: const Icon(
-              Icons.delete, // trash can icon
-              color: Colors.white,
-            ),
-            backgroundColor: Colors.grey, // grey background
-          );
-        },
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.check_circle,
+                    color: Color.fromARGB(255, 19, 100, 186),
+                  ),
+                  title: Text(row["colC"] ?? ""),
+                  subtitle: Text("Number: ${row["name"]}"),
+                  trailing: InkWell(
+  borderRadius: BorderRadius.circular(6),
+  onTap: () => unsubmit(key),
+  child: Image.asset(
+    "lib/assets/UNSUBMIT.png",
+    height: 40, // adjust as needed
+    fit: BoxFit.contain,
+  ),
+),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
+  },
+),
+floatingActionButton: StreamBuilder(
+  stream: dbRef.onValue,
+  builder: (context, snap) {
+    if (!snap.hasData) return const SizedBox.shrink();
+    final event = snap.data as DatabaseEvent;
+    final map = event.snapshot.value as Map?;
+    if (map == null) return const SizedBox.shrink();
+
+    return FloatingActionButton.extended(
+      onPressed: () async {
+        // Show confirmation dialog
+        final confirm = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Confirm Clear All"),
+            content: const Text(
+                "Are you sure you want to mark all submitted rows as unsubmitted?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Yes, Clear All"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (confirm == true) {
+          await unsubmitAll(map);
+        }
+      },
+      label: const Text(
+        "Clear all",
+        style: TextStyle(color: Colors.white),
+      ),
+      icon: const Icon(
+        Icons.delete,
+        color: Colors.white,
+      ),
+      backgroundColor: Colors.grey,
+    );
+  },
+),
+);
   }
 }
