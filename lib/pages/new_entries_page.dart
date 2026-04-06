@@ -142,11 +142,11 @@ Future<void> submitNewEntry() async {
 
                     if (!snapshot.hasData ||
                         snapshot.data == null ||
-                        (snapshot.data! as DatabaseEvent).snapshot.value == null) {
+                        (snapshot.data!).snapshot.value == null) {
                       return const Center(child: Text("No new entries yet"));
                     }
 
-                    final data = (snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>;
+                    final data = (snapshot.data!).snapshot.value as Map<dynamic, dynamic>;
                     final entries = data.entries.toList();
 
                     return ListView.builder(

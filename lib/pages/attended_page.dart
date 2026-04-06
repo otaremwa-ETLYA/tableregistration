@@ -115,11 +115,11 @@ floatingActionButton: StreamBuilder(
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text("Yes, Clear All"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey,
                   foregroundColor: Colors.white,
                 ),
+                child: const Text("Yes, Clear All"),
               ),
             ],
           ),

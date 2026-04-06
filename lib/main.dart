@@ -143,7 +143,7 @@ class MainPage extends StatelessWidget {
 
                             if (snapshot.hasData && snapshot.data != null) {
                               final data =
-                                  (snapshot.data! as DatabaseEvent)
+                                  (snapshot.data!)
                                       .snapshot
                                       .value;
                               if (data is Map) {
