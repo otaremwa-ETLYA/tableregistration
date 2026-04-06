@@ -13,12 +13,14 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^3.15.2        # Must match firebase_database 11.x
   firebase_database: ^11.3.10   # Latest compatible Realtime Database
-  http: ^1.1.0                  # <- Added HTTP package for Apps Script calls
+  http: ^1.1.0       # <- Added HTTP package for Apps Script calls
+  shared_preferences: ^2.2.2           
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  
 
 flutter:
   uses-material-design: true

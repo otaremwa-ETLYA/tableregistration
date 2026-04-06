@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pages/branch_config.dart';
 import '../main.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,6 +14,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool rememberMe = false;
   bool _obscurePassword = true; // Add this at the top of _LoginPageState
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -22,81 +25,126 @@ class _LoginPageState extends State<LoginPage> {
   String error = "";
   bool loading = false;
 
-  Future<void> login() async {
-    setState(() {
-  loading = true;
-  error = "";
-});
-
-String enteredBranch = usernameController.text.trim().toLowerCase();
-String enteredPassword = passwordController.text.trim();
-
-if (enteredBranch.isEmpty || enteredPassword.isEmpty) {
-  setState(() {
-    error = "Please enter both username and password";
-    loading = false;
-  });
-  return;
+@override
+void initState() {
+  super.initState();
+  loadSavedCredentials();
 }
 
-try {
-  final ref = FirebaseDatabase.instance.ref("registration/user");
-  final snapshot = await ref.get();
+Future<void> loadSavedCredentials() async {
+  final prefs = await SharedPreferences.getInstance();
 
-  if (!snapshot.exists) {
+  String? savedUser = prefs.getString("username");
+  String? savedPass = prefs.getString("password");
+  bool savedRemember = prefs.getBool("remember") ?? false;
+
+  if (savedRemember) {
+    usernameController.text = savedUser ?? "";
+    passwordController.text = savedPass ?? "";
+    rememberMe = true;
+  }
+
+  // Set focus AFTER loading credentials
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (usernameController.text.isNotEmpty) {
+      FocusScope.of(context).requestFocus(passwordFocus);
+    } else {
+      FocusScope.of(context).requestFocus(usernameFocus);
+    }
+  });
+}
+
+Future<void> login() async {
+  setState(() {
+    loading = true;
+    error = "";
+  });
+
+  String enteredBranch = usernameController.text.trim().toLowerCase();
+  String enteredPassword = passwordController.text.trim();
+
+  if (enteredBranch.isEmpty || enteredPassword.isEmpty) {
     setState(() {
-      error = "No branches found";
+      error = "Please enter both username and password";
       loading = false;
     });
     return;
   }
 
-  final users = Map<String, dynamic>.from(snapshot.value as Map);
-  bool found = false;
+  try {
+    final ref = FirebaseDatabase.instance.ref("registration/user");
+    final snapshot = await ref.get();
 
-for (var entry in users.entries) {
-  String branchKey = entry.key.toLowerCase(); // lowercase for comparison
-  final branchData = Map<String, dynamic>.from(entry.value as Map);
-  final storedPassword = branchData["password"]?.toString() ?? "";
+    if (!snapshot.exists) {
+      setState(() {
+        error = "No branches found";
+        loading = false;
+      });
+      return;
+    }
 
-  if (branchKey == enteredBranch && storedPassword == enteredPassword) {
-    BranchConfig.branch = entry.key; // preserve original case
-    found = true;
+    final users = Map<String, dynamic>.from(snapshot.value as Map);
+    bool found = false;
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MainPage(
-          username: enteredBranch, // use the branch name as username
-        ),
-      ),
-    );
-    break;
-  }
-}
+    for (var entry in users.entries) {
+      String branchKey = entry.key.toLowerCase();
+      final branchData = Map<String, dynamic>.from(entry.value as Map);
+      final storedPassword = branchData["password"]?.toString() ?? "";
 
-  if (!found) {
+      if (branchKey == enteredBranch && storedPassword == enteredPassword) {
+
+        // Save credentials
+        final prefs = await SharedPreferences.getInstance();
+
+        if (rememberMe) {
+          await prefs.setString("username", enteredBranch);
+          await prefs.setString("password", enteredPassword);
+          await prefs.setBool("remember", true);
+        } else {
+          await prefs.remove("username");
+          await prefs.remove("password");
+          await prefs.setBool("remember", false);
+        }
+
+        BranchConfig.branch = entry.key;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MainPage(
+              username: enteredBranch,
+            ),
+          ),
+        );
+
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      setState(() {
+        error = "Incorrect branch or password";
+        loading = false;
+      });
+    }
+
+  } catch (e) {
     setState(() {
-      error = "Incorrect branch or password";
+      error = "Error: ${e.toString()}";
       loading = false;
     });
   }
-} catch (e) {
-  setState(() {
-    error = "Error: ${e.toString()}";
-    loading = false;
-  });
-}}
+}
 
-  @override
-  void dispose() {
-    usernameController.dispose();
-    passwordController.dispose();
-    usernameFocus.dispose();
-    passwordFocus.dispose();
-    super.dispose();
-  }
-
+@override
+void dispose() {
+  usernameController.dispose();
+  passwordController.dispose();
+  usernameFocus.dispose();
+  passwordFocus.dispose();
+  super.dispose();
+}
   @override
   Widget build(BuildContext context) {return Scaffold(
   body: Stack(
@@ -214,6 +262,22 @@ for (var entry in users.entries) {
                       login();
                     },
                   ),
+                  Row(
+                  children: [
+                    Checkbox(
+                      value: rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          rememberMe = value!;
+                        });
+                      },
+                    ),
+                    const Text(
+                      "Save this password",
+                      style: TextStyle(fontSize: 13),
+                    ),
+                  ],
+                ),
                   const SizedBox(height: 20),
 
                   // Sign In button
