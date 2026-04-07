@@ -125,10 +125,16 @@ final dbRef = BranchConfig.dbRef;
   onTap: () async {
     await dbRef.child(key).update({"submitted": true});
   },
-  child: Image.asset(
-    "lib/assets/SUBMIT.png",
-    height: 40,
-    fit: BoxFit.contain,
+  child: LayoutBuilder(
+    builder: (context, constraints) {
+      double width = MediaQuery.of(context).size.width;
+
+      return Image.asset(
+        "lib/assets/SUBMIT.png",
+        height: width * 0.08, // scales with screen size
+        fit: BoxFit.contain,
+      );
+    },
   ),
 ),
                         ),

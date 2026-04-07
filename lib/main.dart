@@ -157,58 +157,56 @@ class MainPage extends StatelessWidget {
                             }
 
                             return TabBar(
-                              labelColor: const Color.fromARGB(
-                                255,
-                                19,
-                                100,
-                                186,
-                              ),
-                              unselectedLabelColor: Colors.black54,
-                              indicatorColor: const Color.fromARGB(
-                                255,
-                                19,
-                                100,
-                                186,
-                              ),
-                              labelStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              tabs: [
-                                const Tab(text: "Register"),
-                                Tab(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Text("Attended"),
-                                      const SizedBox(width: 6),
-                                      if (submittedCount > 0)
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '$submittedCount',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                                const Tab(text: "Self Register"),
-                                const Tab(text: "New Entries"),
-                              ],
-                            );
+  isScrollable: false, // makes tabs fill the width evenly
+  labelColor: const Color.fromARGB(255, 19, 100, 186),
+  unselectedLabelColor: Colors.black54,
+  indicatorColor: const Color.fromARGB(255, 19, 100, 186),
+
+  labelStyle: const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 12, // slightly smaller for small phones
+  ),
+
+  tabs: [
+    const Tab(text: "Register"),
+
+    Tab(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "Attended",
+            style: TextStyle(fontSize: 12),
+          ),
+          const SizedBox(width: 4),
+
+          if (submittedCount > 0)
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 5,
+                vertical: 1,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '$submittedCount',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+        ],
+      ),
+    ),
+
+    const Tab(text: "Self"),
+    const Tab(text: "Entries"),
+  ],
+);
                           },
                         ),
 
