@@ -83,6 +83,7 @@ Widget build(BuildContext context) {
 
                 // The card
                 Card(
+                  color: Colors.white,
                   elevation: 4,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

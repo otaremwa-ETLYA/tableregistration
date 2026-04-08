@@ -112,33 +112,43 @@ final dbRef = BranchConfig.dbRef;
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white, // only content area is white
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ListTile(
-                          title: Text(row["colC"] ?? ""),
-                          subtitle: Text("Number: ${row["name"]}"),
-                          trailing: InkWell(
-  borderRadius: BorderRadius.circular(6),
-  onTap: () async {
-    await dbRef.child(key).update({"submitted": true});
-  },
-  child: LayoutBuilder(
-    builder: (context, constraints) {
-      double width = MediaQuery.of(context).size.width;
-
-      return Image.asset(
-        "lib/assets/SUBMIT.png",
-        height: width * 0.08, // scales with screen size
-        fit: BoxFit.contain,
-      );
-    },
-  ),
+                        child: Container(decoration: BoxDecoration(
+  color: Colors.white, // only content area is white
+  borderRadius: BorderRadius.circular(8),
 ),
-                        ),
-                        )
+child: ListTile(
+  title: Text(
+    row["colC"] ?? "",
+    style: const TextStyle(fontWeight: FontWeight.bold), // colC bold
+  ),
+  subtitle: Text.rich(
+    TextSpan(
+      children: [
+        const TextSpan(text: "Number: "), // label normal
+        TextSpan(
+          text: row["name"] ?? "", // number normal
+        ),
+      ],
+    ),
+  ),
+  trailing: InkWell(
+    borderRadius: BorderRadius.circular(6),
+    onTap: () async {
+      await dbRef.child(key).update({"submitted": true});
+    },
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        double width = MediaQuery.of(context).size.width;
+
+        return Image.asset(
+          "lib/assets/SUBMIT.png",
+          height: width * 0.08, // scales with screen size
+          fit: BoxFit.contain,
+        );
+      },
+    ),
+  ),
+),)
                       );
                     },
                   );

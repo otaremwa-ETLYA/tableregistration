@@ -61,29 +61,47 @@ class AttendedPage extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white, // only the content is white
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.check_circle,
-                    color: Color.fromARGB(255, 19, 100, 186),
-                  ),
-                  title: Text(row["colC"] ?? ""),
-                  subtitle: Text("Number: ${row["name"]}"),
-                  trailing: InkWell(
-  borderRadius: BorderRadius.circular(6),
-  onTap: () => unsubmit(key),
-  child: Image.asset(
-    "lib/assets/UNSUBMIT.png",
-    height: 40, // adjust as needed
-    fit: BoxFit.contain,
-  ),
+              child: Container(decoration: BoxDecoration(
+  color: Colors.white, // only the content is white
+  borderRadius: BorderRadius.circular(8),
 ),
-                ),
-              ),
+child: ListTile(
+  leading: const Icon(
+    Icons.check_circle,
+    color: Color.fromARGB(255, 19, 100, 186),
+  ),
+  title: Text(
+    row["colC"] ?? "",
+    style: const TextStyle(fontWeight: FontWeight.bold), // colC bold
+  ),
+  subtitle: Text.rich(
+    TextSpan(
+      children: [
+        const TextSpan(text: "Number: "), // label normal
+        TextSpan(
+          text: row["name"] ?? "", // number normal
+        ),
+      ],
+    ),
+  ),
+  trailing: InkWell(
+    borderRadius: BorderRadius.circular(6),
+    onTap: () => unsubmit(key),
+    child: Builder(
+      builder: (context) {
+        double width = MediaQuery.of(context).size.width;
+
+        double imageHeight = (width * 0.08).clamp(26, 40);
+
+        return Image.asset(
+          "lib/assets/UNSUBMIT.png",
+          height: imageHeight,
+          fit: BoxFit.contain,
+        );
+      },
+    ),
+  ),
+),),
             );
           },
         ),

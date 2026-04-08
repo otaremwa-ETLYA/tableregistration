@@ -60,6 +60,7 @@ Future<void> submitNewEntry() async {
               // Card for adding new entries
               Card(
                 elevation: 4,
+                color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
