@@ -59,11 +59,11 @@ class AttendedPage extends StatelessWidget {
               elevation: 2,
               color: Colors.transparent, // make card itself transparent
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(5),
               ),
               child: Container(decoration: BoxDecoration(
   color: Colors.white, // only the content is white
-  borderRadius: BorderRadius.circular(8),
+  borderRadius: BorderRadius.circular(5),
 ),
 child: ListTile(
   leading: const Icon(
@@ -84,23 +84,27 @@ child: ListTile(
       ],
     ),
   ),
-  trailing: InkWell(
-    borderRadius: BorderRadius.circular(6),
-    onTap: () => unsubmit(key),
-    child: Builder(
-      builder: (context) {
-        double width = MediaQuery.of(context).size.width;
-
-        double imageHeight = (width * 0.08).clamp(26, 40);
-
-        return Image.asset(
-          "lib/assets/UNSUBMIT.png",
-          height: imageHeight,
-          fit: BoxFit.contain,
-        );
-      },
+  trailing: ElevatedButton(
+  onPressed: () => unsubmit(key),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color.fromARGB(93, 91, 64, 64), // dark background
+    foregroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(5),
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    minimumSize: const Size(0, 36),
+    elevation: 0,
+  ),
+  child: const Text(
+    "Unsubmit",
+    style: TextStyle(
+      color: Colors.white,
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
     ),
   ),
+),
 ),),
             );
           },
@@ -109,23 +113,27 @@ child: ListTile(
     );
   },
 ),
+floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+
 floatingActionButton: StreamBuilder(
   stream: dbRef.onValue,
   builder: (context, snap) {
     if (!snap.hasData) return const SizedBox.shrink();
+
     final event = snap.data as DatabaseEvent;
     final map = event.snapshot.value as Map?;
+
     if (map == null) return const SizedBox.shrink();
 
     return FloatingActionButton.extended(
       onPressed: () async {
-        // Show confirmation dialog
         final confirm = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text("Confirm Clear All"),
             content: const Text(
-                "Are you sure you want to mark all submitted rows as unsubmitted?"),
+              "Are you sure you want to mark all submitted rows as unsubmitted?",
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -151,10 +159,7 @@ floatingActionButton: StreamBuilder(
         "Clear all",
         style: TextStyle(color: Colors.white),
       ),
-      icon: const Icon(
-        Icons.delete,
-        color: Colors.white,
-      ),
+      icon: const Icon(Icons.delete, color: Colors.white),
       backgroundColor: Colors.grey,
     );
   },

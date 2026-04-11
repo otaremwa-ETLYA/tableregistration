@@ -59,9 +59,9 @@ class MainPage extends StatelessWidget {
         body: Stack(
           children: [
             // Full-screen background image
-            SizedBox.expand(
-              child: Image.asset("lib/assets/bgd_image.jpg", fit: BoxFit.cover),
-            ),
+            // SizedBox.expand(
+            //   child: Image.asset("lib/assets/bgd_image.jpg", fit: BoxFit.cover),
+            // ),
 
             // Optional semi-transparent overlay to improve readability
             Container(color: Colors.black.withOpacity(0.2)),
@@ -136,79 +136,85 @@ class MainPage extends StatelessWidget {
                         const SizedBox(height: 10),
 
                         /// NAVIGATION BAR WITH BADGE ON ATTENDED
-                        StreamBuilder(
-                          stream: dbRef.onValue,
-                          builder: (context, snapshot) {
-                            int submittedCount = 0;
+                        StreamBuilder(stream: dbRef.onValue,
+builder: (context, snapshot) {
+  int submittedCount = 0;
 
-                            if (snapshot.hasData && snapshot.data != null) {
-                              final data =
-                                  (snapshot.data!)
-                                      .snapshot
-                                      .value;
-                              if (data is Map) {
-                                submittedCount =
-                                    data.values
-                                        .where(
-                                          (entry) => entry['submitted'] == true,
-                                        )
-                                        .length;
-                              }
-                            }
+  if (snapshot.hasData && snapshot.data != null) {
+    final data = (snapshot.data!).snapshot.value;
 
-                            return TabBar(
-  isScrollable: false, // makes tabs fill the width evenly
-  labelColor: const Color.fromARGB(255, 19, 100, 186),
-  unselectedLabelColor: Colors.black54,
-  indicatorColor: const Color.fromARGB(255, 19, 100, 186),
+    if (data is Map) {
+      submittedCount = data.values
+          .where((entry) => entry['submitted'] == true)
+          .length;
+    }
+  }
 
-  labelStyle: const TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 12, // slightly smaller for small phones
-  ),
-
-  tabs: [
-    const Tab(text: "Register"),
-
-    Tab(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            "Attended",
-            style: TextStyle(fontSize: 12),
-          ),
-          const SizedBox(width: 4),
-
-          if (submittedCount > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 5,
-                vertical: 1,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '$submittedCount',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-        ],
-      ),
+  return Container(
+    decoration: const BoxDecoration(
+      color: Color.fromARGB(255, 240, 240, 240), // tab bar background
     ),
+    child: TabBar(
+      isScrollable: false,
 
-    const Tab(text: "Self"),
-    const Tab(text: "Entries"),
-  ],
-);
-                          },
-                        ),
+      // ✅ WHITE BACKGROUND SELECTED TAB (NO UNDERLINE)
+      indicator: BoxDecoration(
+        color: Colors.white,
+        
+      ),
+
+      indicatorSize: TabBarIndicatorSize.tab,
+
+      labelColor: const Color.fromARGB(255, 19, 100, 186),
+      unselectedLabelColor: Colors.black54,
+
+      labelStyle: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+      ),
+
+      tabs: [
+        const Tab(text: "Register"),
+
+        Tab(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Attended",
+                style: TextStyle(fontSize: 12),
+              ),
+              const SizedBox(width: 4),
+
+              if (submittedCount > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$submittedCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+
+        const Tab(text: "Self"),
+        const Tab(text: "Entries"),
+      ],
+    ),
+  );
+},),
 
                         const Expanded(
                           child: TabBarView(

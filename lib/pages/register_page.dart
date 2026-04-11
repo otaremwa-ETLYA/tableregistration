@@ -110,11 +110,11 @@ final dbRef = BranchConfig.dbRef;
                             vertical: 8, horizontal: 12),
                         elevation: 2,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(5),
                         ),
                         child: Container(decoration: BoxDecoration(
   color: Colors.white, // only content area is white
-  borderRadius: BorderRadius.circular(8),
+  borderRadius: BorderRadius.circular(5),
 ),
 child: ListTile(
   title: Text(
@@ -131,23 +131,29 @@ child: ListTile(
       ],
     ),
   ),
-  trailing: InkWell(
-    borderRadius: BorderRadius.circular(6),
-    onTap: () async {
-      await dbRef.child(key).update({"submitted": true});
-    },
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        double width = MediaQuery.of(context).size.width;
-
-        return Image.asset(
-          "lib/assets/SUBMIT.png",
-          height: width * 0.08, // scales with screen size
-          fit: BoxFit.contain,
-        );
-      },
+  trailing: ElevatedButton(
+  onPressed: () async {
+    await dbRef.child(key).update({"submitted": true});
+  },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color.fromARGB(255, 19, 100, 186),
+    foregroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(5),
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    minimumSize: const Size(0, 36), // keeps it compact
+    elevation: 0,
+  ),
+  child: const Text(
+    "Submit",
+    style: TextStyle(
+      color: Colors.white,
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
     ),
   ),
+),
 ),)
                       );
                     },

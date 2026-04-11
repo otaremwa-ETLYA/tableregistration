@@ -151,10 +151,10 @@ void dispose() {
     children: [
       // Background image
       SizedBox.expand(
-        child: Image.asset(
-          "lib/assets/bgd_image.jpg",
-          fit: BoxFit.cover,
-        ),
+        // child: Image.asset(
+        //   "lib/assets/bgd_image.jpg",
+        //   fit: BoxFit.cover,
+        // ),
       ),
 
       // Centered card content
