@@ -52,6 +52,7 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Dynamic Firebase reference based on logged-in branch
     final dbRef = BranchConfig.dbRef;
+    
 
     return DefaultTabController(
       length: 4,
@@ -70,18 +71,12 @@ class MainPage extends StatelessWidget {
             Align(
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 800),
-                child: Card(
-                  elevation: 8,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  color: Colors.white.withOpacity(
-                    0.85,
-                  ), // semi-transparent card
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Container(
+                color: Colors.transparent, // no card feel
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
                       children: [
                         const SizedBox(height: 25),
 
@@ -90,7 +85,7 @@ class MainPage extends StatelessWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                          color: Colors.white, // white background
+                          //color: Colors.white, // white background
                           // borderRadius: const BorderRadius.only(
                           //   topLeft: Radius.circular(12),
                           //   topRight: Radius.circular(12),

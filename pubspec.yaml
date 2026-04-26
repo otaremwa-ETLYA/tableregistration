@@ -14,7 +14,8 @@ dependencies:
   firebase_core: ^3.15.2        # Must match firebase_database 11.x
   firebase_database: ^11.3.10   # Latest compatible Realtime Database
   http: ^1.1.0       # <- Added HTTP package for Apps Script calls
-  shared_preferences: ^2.2.2           
+  shared_preferences: ^2.2.2   
+  url_launcher: ^6.2.5        
 
 dev_dependencies:
   flutter_test:

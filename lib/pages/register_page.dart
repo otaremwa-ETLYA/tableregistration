@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../pages/branch_config.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
+import 'package:flutter/services.dart';   // for Clipboard
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -13,14 +16,14 @@ class _RegisterPageState extends State<RegisterPage> {
 final dbRef = BranchConfig.dbRef;
 
   String searchQuery = "";
-  String filterBy = "bike";
+  String filterBy = "name";
 
-  String getSearchValue(Map row) {
-    if (filterBy == "bike") {
-      return (row["name"] ?? "").toString().toLowerCase();
-    }
+String getSearchValue(Map row) {
+  if (filterBy == "name") {
     return (row["colC"] ?? "").toString().toLowerCase();
   }
+  return (row["name"] ?? "").toString().toLowerCase();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -106,56 +109,119 @@ final dbRef = BranchConfig.dbRef;
                       final row = entry.value as Map;
 
                       return Card(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 12),
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Container(decoration: BoxDecoration(
-  color: Colors.white, // only content area is white
-  borderRadius: BorderRadius.circular(5),
-),
-child: ListTile(
-  title: Text(
-    row["colC"] ?? "",
-    style: const TextStyle(fontWeight: FontWeight.bold), // colC bold
+  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+  elevation: 2,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(5),
   ),
-  subtitle: Text.rich(
-    TextSpan(
-      children: [
-        const TextSpan(text: "Number: "), // label normal
-        TextSpan(
-          text: row["name"] ?? "", // number normal
-        ),
-      ],
-    ),
-  ),
-  trailing: ElevatedButton(
-  onPressed: () async {
-    await dbRef.child(key).update({"submitted": true});
-  },
-  style: ElevatedButton.styleFrom(
-    backgroundColor: const Color.fromARGB(255, 19, 100, 186),
-    foregroundColor: Colors.white,
-    shape: RoundedRectangleBorder(
+  child: Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
       borderRadius: BorderRadius.circular(5),
     ),
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    minimumSize: const Size(0, 36), // keeps it compact
-    elevation: 0,
-  ),
-  child: const Text(
-    "Submit",
-    style: TextStyle(
-      color: Colors.white,
+    child: ListTile(
+      title: Text(
+        row["colC"] ?? "",
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
+        ),
+      ),
+
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: "${row["name"] ?? ""} | ",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                ),
+              ),
+              WidgetSpan(
+                child: GestureDetector(
+  onTap: () async {
+    String phone = row["colD"]?.toString() ?? "";
+    phone = phone.trim();
+
+    if (phone.isNotEmpty) {
+      if (!phone.startsWith("0")) {
+        phone = "0$phone";
+      }
+
+      if (kIsWeb) {
+        // 👉 WEB: copy instead of call
+        await Clipboard.setData(ClipboardData(text: phone));
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Copied $phone")),
+        );
+      } else {
+        // 👉 MOBILE: call
+        final uri = Uri(scheme: 'tel', path: phone);
+        await launchUrl(uri);
+      }
+    }
+  },
+  onLongPress: () async {
+    // 👉 ALWAYS allow manual copy (both web & mobile)
+    String phone = row["colD"]?.toString() ?? "";
+    phone = phone.trim();
+
+    if (phone.isNotEmpty) {
+      if (!phone.startsWith("0")) {
+        phone = "0$phone";
+      }
+
+      await Clipboard.setData(ClipboardData(text: phone));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Copied $phone")),
+      );
+    }
+  },
+  child: Text(
+    row["colD"] ?? "",
+    style: const TextStyle(
+      color: Colors.grey,
       fontSize: 12,
-      fontWeight: FontWeight.bold,
+      decoration: TextDecoration.underline,
     ),
   ),
 ),
-),)
-                      );
+              ),
+            ],
+          ),
+        ),
+      ),
+
+      trailing: ElevatedButton(
+        onPressed: () async {
+          await dbRef.child(key).update({"submitted": true});
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromARGB(255, 19, 100, 186),
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          minimumSize: const Size(0, 36),
+          elevation: 0,
+        ),
+        child: const Text(
+          "Submit",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ),
+  ),
+);
                     },
                   );
                 },
